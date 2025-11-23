@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 个人英语学习词汇表 - 库洛米学习界面</title>
+    <style>
+        /* --- V8.0 库洛米 Kuromi Aesthetic Theme --- */
+
+        /* --- 整体布局与公共样式 --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a; /* Kuromi: Dark Background */
+            color: #e0e0e0; /* Kuromi: Light Text */
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background-color: #ffffff; /* White center for contrast */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(255, 105, 180, 0.5); /* Hot Pink Shadow */
+        }
+        h1 {
+            color: #ff69b4; /* Hot Pink */
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px #333;
+        }
+        h2 {
+            color: #8a2be2; /* Blue Violet/Purple */
+            border-left: 5px solid #ff69b4;
+            padding-left: 10px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        /* --- 模式选择器样式 --- */
+        .mode-selector {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .mode-selector button {
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid #ff69b4; /* Pink border */
+            border-radius: 6px;
+            transition: background-color 0.3s, transform 0.1s, color 0.3s;
+            background-color: #2c3e50; /* Dark button base */
+            color: #ff69b4; /* Pink text */
+        }
+        .mode-selector button:hover {
+            transform: translateY(-2px);
+            background-color: #ff69b4; /* Pink hover fill */
+            color: #1a1a1a; /* Dark text on hover */
+        }
+
+        /* --- 列表视图样式 --- */
+        #listView table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333; /* Ensure readability inside white container */
+        }
+        #listView th, #listView td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f2f2f2;
+        }
+        #listView th {
+            background-color: #1a1a1a; /* Black header */
+            color: #ff69b4; /* Pink text */
+            font-weight: 700;
+        }
+        #listView tr:nth-child(even) {
+            background-color: #f7f7f7;
+        }
+        .word-cell {
+            font-weight: bold;
+            color: #ff69b4; /* Hot Pink for words */
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .word-cell:hover {
+            color: #8a2be2; /* Purple hover */
+            text-decoration: underline;
+        }
+        .pos {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        .pron {
+            font-family: 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif;
+            color: #2ecc71; /* Keep green for pronunciation, it contrasts well */
+        }
+
+        /* --- 卡片模式样式 --- */
+        #flashcardView {
+            display: none; 
+            text-align: center;
+            padding-top: 50px;
+        }
+        .card-container {
+            perspective: 1000px;
+            width: 350px;
+            height: 250px;
+            margin: 30px auto;
+        }
+        .flashcard {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px; /* Softer edges */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card-front {
+            background-color: #1a1a1a; /* Black front */
+            color: #ff69b4; /* Pink text */
+            font-size: 3em;
+            font-weight: 700;
+            border: 3px solid #8a2be2; /* Purple border */
+        }
+        .card-back {
+            background-color: #f7f7f7; /* Light back */
+            color: #1a1a1a;
+            transform: rotateY(180deg);
+            text-align: left;
+            font-size: 1.1em;
+            border: 3px solid #ff69b4; /* Pink border */
+        }
+        .card-back p {
+            margin: 5px 0;
+            line-height: 1.4;
+        }
+        .card-back .definition {
+            font-weight: bold;
+            font-size: 1.3em;
+            color: #ff69b4; /* Pink definition */
+        }
+        .card-back .example {
+            font-style: italic;
+            font-size: 0.9em;
+            color: #2c3e50;
+        }
+        .card-controls button {
+            background-color: #8a2be2;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: bold;
+        }
+        .card-controls button:hover {
+            background-color: #ff69b4;
+        }
+
+        /* --- 听写和宠物游戏共用样式 --- */
+        .quiz-area {
+            max-width: 500px; 
+            margin: 30px auto; 
+            padding: 30px; 
+            border-radius: 10px; 
+            border: 3px solid #ff69b4; /* Pink Border */
+            background-color: #fff0f5; /* Very light pink background */
+            color: #1a1a1a;
+        }
+        .quiz-area h3 {
+            color: #8a2be2; /* Purple instruction */
+        }
+        input[type="text"] {
+            width: 80%; 
+            padding: 12px; 
+            font-size: 1.1em; 
+            border: 2px solid #8a2be2 !important;
+            border-radius: 5px; 
+            margin-bottom: 15px;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: #ff69b4 !important;
+            box-shadow: 0 0 5px rgba(255, 105, 180, 0.5);
+            outline: none;
+        }
+        #quizSpeakBtn {
+            padding: 15px 30px; 
+            font-size: 1.5em; 
+            background-color: #ff69b4 !important; /* Pink speak button */
+            color: white;
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-bottom: 20px;
+        }
+        #quizSubmitBtn, #dogGameSubmitBtn {
+            padding: 12px 25px; 
+            font-size: 1.1em; 
+            background-color: #1a1a1a !important; /* Black submit */
+            color: #ff69b4 !important;
+            border: 2px solid #ff69b4 !important;
+            border-radius: 5px; 
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #quizNextBtn, #dogGameNextBtn {
+            padding: 12px 25px; 
+            font-size: 1.1em; 
+            background-color: #8a2be2 !important; /* Purple next */
+            color: white !important;
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        /* --- 易混淆配对样式 --- */
+        .match-card {
+            border: 2px solid #ff69b4; 
+            padding: 15px; 
+            border-radius: 8px; 
+            background-color: #fef0fe; /* Light pink background */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .match-card strong {
+            color: #ff69b4;
+        }
+
+        /* --- 🐶 宠物领养挑战样式 --- */
+        .dog-container {
+            border: 3px solid #8a2be2; /* Purple border */
+            background-color: #2c3e50; /* Dark blue/gray internal background */
+            color: white;
+        }
+        #dogStatus, #boneCount {
+            color: #ff69b4; /* Pink status */
+            font-weight: bold;
+        }
+        #dogAvatar {
+            color: #ff69b4;
+        }
+        #dogGameFeedback {
+            font-size: 1.1em;
+        }
+        /* 颜色反馈，使用粉色/紫色代替默认绿色/红色，但保留含义 */
+        #dogGameFeedback[style*="#2ecc71"] { /* Correct (Green) -> Pink */
+            color: #ff69b4 !important; 
+        }
+        #dogGameFeedback[style*="#e74c3c"] { /* Incorrect (Red) -> Pink/Purple */
+            color: #8a2be2 !important; 
+        }
+
+        /* Memorize Button */
+        #memorizeWordBtn {
+            background-color: #ff69b4 !important; 
+            color: #1a1a1a !important;
+            border: none;
+            font-weight: bold;
+        }
+        #wordReviewArea {
+            border: 2px dashed #ff69b4 !important;
+            background-color: #1a1a1a !important;
+            color: white !important;
+        }
+        #reviewContent strong {
+            color: #8a2be2 !important;
+        }
+        #reviewContent span {
+            color: #ff69b4 !important;
+        }
+
+        /* --- 移动端优化 --- */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 15px; }
+            .mode-selector button { font-size: 12px; padding: 10px 12px; }
+            /* 列表模式：堆叠表格 */
+            #listView table, #listView thead, #listView tbody, #listView th, #listView td, #listView tr { display: block; }
+            #listView tr { margin-bottom: 15px; border: 1px solid #f2f2f2; border-radius: 8px; overflow: hidden; }
+            #listView td {
+                border-bottom: 1px solid #f2f2f2; text-align: right; padding-left: 50%; position: relative;
+                color: #333; /* Ensure readability */
+            }
+            #listView td::before {
+                content: attr(data-label); position: absolute; left: 10px; width: 45%; padding-right: 10px; white-space: nowrap; font-weight: 600; color: #1a1a1a; text-align: left;
+            }
+            #listView th { display: none; }
+            /* 卡片模式 */
+            .card-container { width: 95%; height: 200px; }
+            .card-front { font-size: 2em; }
+            .card-back { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 个人英语学习词汇表 - Kuromi Style 🖤💖</h1>
+        
+        <div class="mode-selector">
+            <button id="listViewBtn">📝 列表学习模式</button>
+            <button id="flashcardBtn">🃏 卡片翻转模式</button>
+            <button id="quizModeBtn">✍️ 听写测试模式</button>
+            <button id="matchModeBtn">🔗 易混淆词配对</button>
+            <button id="dogGameBtn">🐶 宠物领养挑战</button>
+        </div>
+
+        <div id="listView">
+            <p style="text-align: center; color: #ff69b4; font-weight: 500;">**列表模式：点击表格中粗体的英文单词，即可听到正确的发音！**</p>
+            <div id="vocabulary-list">
+                </div>
+        </div>
+
+        <div id="flashcardView">
+            <div class="card-container">
+                <div class="flashcard" onclick="flipCard()">
+                    <div class="card-face card-front" id="cardFront">
+                        </div>
+                    <div class="card-face card-back" id="cardBack">
+                        </div>
+                </div>
+            </div>
+
+            <div class="card-controls">
+                <button id="pronounceCardBtn" onclick="speak(currentWordList[currentCardIndex].word)">🔊 听发音</button>
+                <button id="prevCardBtn">⬅️ 上一个</button>
+                <button id="nextCardBtn">下一个 ➡️</button>
+            </div>
+            <div class="card-info" style="color: #1a1a1a;">
+                当前单词：<span id="cardCount">1</span> / <span id="totalCards">0</span>
+                <p id="cardCategory" style="font-size: 0.9em; margin-top: 5px;"></p>
+            </div>
+        </div>
+
+        <div id="quizView" style="display: none; text-align: center; padding: 50px 20px;">
+            <h2>✍️ 听写与拼写测试</h2>
+            <p id="quizCategory" style="color: #7f8c8d;">分类：</p>
+            <div class="quiz-area">
+                <h3 id="quizInstruction">点击按钮听单词：</h3>
+                
+                <button id="quizSpeakBtn">
+                    🔊 播放单词
+                </button>
+
+                <input type="text" id="quizInput" placeholder="在此输入您听到的单词">
+                
+                <button id="quizSubmitBtn">
+                    提交答案
+                </button>
+
+                <p id="quizFeedback" style="font-weight: bold; margin-top: 20px; min-height: 20px;"></p>
+            </div>
+            
+            <div class="quiz-score" style="margin-top: 30px; color: #1a1a1a;">
+                <button id="quizNextBtn">
+                    下一个单词 ➡️
+                </button>
+                <p>得分：<span id="scoreCorrect">0</span> / <span id="scoreTotal">0</span></p>
+            </div>
+        </div>
+
+        <div id="matchView" style="display: none; padding: 20px;">
+            <h2>🔗 易混淆词配对学习</h2>
+            <p style="text-align: center; color: #8a2be2; font-weight: 500;">点击单词可听取发音。请仔细对比左栏单词和右栏易混淆词，回忆它们的中文意思。</p>
+            <div id="matchListContainer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                </div>
+        </div>
+
+        <div id="dogGameView" style="display: none; text-align: center; padding: 50px 20px;">
+            <h2>🐶 宠物领养挑战：拼写午餐！</h2>
+            <div class="quiz-area dog-container">
+                
+                <h3 id="dogStatus">🎉 你领养了一只小狗！</h3>
+                
+                <div style="font-size: 2em; margin-bottom: 15px;">
+                    🍚 狗粮：<span id="boneCount">0</span> 份
+                </div>
+
+                <div id="dogAvatar">
+                    🐕
+                </div>
+                <p id="dogMood" style="font-style: italic;">小狗很期待你的挑战！</p>
+
+                <hr style="border-top: 1px dashed #ff69b4; margin: 20px 0;">
+
+                <h3 id="dogGameQuestion" style="min-height: 40px;">请回答：</h3>
+                
+                <input type="text" id="dogGameInput" placeholder="在此输入英文单词拼写">
+                
+                <button id="dogGameSubmitBtn">
+                    提交答案
+                </button>
+                
+                <button id="dogGameNextBtn" style="display: none;">
+                    下一题 ➡️
+                </button>
+
+                <p id="dogGameFeedback" style="font-weight: bold; margin-top: 20px; min-height: 20px;"></p>
+
+                <button id="memorizeWordBtn" onclick="toggleDogReview()" style="display: none;">
+                    🐶 帮我记单词 (查看详情)
+                </button>
+
+                <div id="wordReviewArea" style="display: none;">
+                    <p style="font-weight: bold;">【错误回顾】小狗帮你强化记忆：</p>
+                    <div id="reviewContent"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 核心词汇数据 ---
+        const vocabularyData = [
+            { category: "一、 生物与身体部位 (Biology & Body Parts)", shortCategory: "生物/身体", words: [
+                { word: "Gills", pos: "名词 (N.)", def: "鱼鳃", pron: "/gɪlz/", example: "The fish breathes using its gills.", confusable: "Grills (烤架)" },
+                { word: "Leg", pos: "名词 (N.)", def: "腿", pron: "/lɛg/", example: "A horse has four legs.", confusable: "Lag (滞后)" },
+                { word: "Feathers", pos: "名词 (N.)", def: "羽毛", pron: "/ˈfɛðərz/", example: "The bird smoothed its feathers with its beak.", confusable: "Leather (皮革)" },
+                { word: "Scales", pos: "名词 (N.)", def: "鱼鳞；刻度；天平", pron: "/skeɪlz/", example: "Most fish are covered in scales.", confusable: "Sails (船帆)" },
+                { word: "Mouth", pos: "名词 (N.)", def: "嘴巴", pron: "/maʊθ/", example: "Open your mouth and say 'Ah.'", confusable: "Mouse (老鼠)" }
+            ]},
+            { category: "二、 动物与行为 (Animals & Actions)", shortCategory: "动物/行为", words: [
+                { word: "Eagle", pos: "名词 (N.)", def: "鹰", pron: "/ˈiːgəl/", example: "The eagle soared high above the mountains.", confusable: "Eager (渴望的)" },
+                { word: "Squawk", pos: "动词 (V.)", def: "(鸟类等) 嘎嘎地叫；尖叫", pron: "/skwɔːk/", example: "The parrot gave a loud squawk when the cat came near.", confusable: "Quack (鸭叫声)" },
+                { word: "Creeps", pos: "动词 (V.)", def: "爬行；偷偷地缓慢移动", pron: "/kriːps/", example: "The cat creeps up on the mouse quietly.", confusable: "Crisp (脆的)" },
+                { word: "Chases", pos: "动词 (V.)", def: "追逐；追赶", pron: "/ˈtʃeɪsɪz/", example: "The dog chases the ball in the park.", confusable: "Choices (选择)" },
+                { word: "Hunt", pos: "动词 (V.)", def: "打猎；搜寻", pron: "/hʌnt/", example: "Lions hunt for food at night.", confusable: "Hut (小屋)" },
+                { word: "flies", pos: "动词 (V.)", def: "飞", pron: "/flaɪz/", example: "An airplane flies in the sky.", confusable: "Fries (薯条)" },
+                { word: "horse", pos: "名词 (N.)", def: "马", pron: "/hɔːrs/", example: "She rode a brown horse on the farm.", confusable: "Hoarse (沙哑的)" }
+            ]},
+            { category: "三、 状态、情感与描述 (States, Emotions & Descriptions)", shortCategory: "状态/描述", words: [
+                { word: "Quietly", pos: "副词 (Adv.)", def: "安静地；悄悄地", pron: "/ˈkwaɪətli/", example: "She closed the door quietly so as not to wake the baby.", confusable: "Quickly (快速地)" },
+                { word: "Right", pos: "副词/形容词/名词 (Adv./Adj./N.)", def: "正确的；右边的；权利", pron: "/raɪt/", example: "You gave the right answer.", confusable: "Write (写), Rite (仪式)" },
+                { word: "Scared", pos: "形容词 (Adj.)", def: "害怕的；受惊的", pron: "/skɛrd/", example: "The little boy was scared of the dark.", confusable: "Scarred (有疤痕的)" },
+                { word: "Apart", pos: "副词 (Adv.)", def: "分开地；分离地", pron: "/əˈpɑːrt/", example: "The old building was torn apart.", confusable: "A part (一部分)" },
+                { word: "Always", pos: "副词 (Adv.)", def: "总是；一直", pron: "/ˈɔːlweɪz/", example: "I always drink coffee in the morning.", confusable: "All ways (所有方式)" },
+                { word: "Nervous", pos: "形容词 (Adj.)", def: "紧张的；不安的", pron: "/ˈnɜːrvəs/", example: "She felt nervous before the big presentation.", confusable: "Nerve (神经)" },
+                { word: "Fierce", pos: "形容词 (Adj.)", def: "凶猛的；激烈的", pron: "/fɪərs/", example: "A tiger is a fierce predator.", confusable: "Pierce (刺穿)" },
+                { word: "Solid", pos: "形容词 (Adj.)", def: "固体的；坚固的", pron: "/ˈsɑːlɪd/", example: "Ice is water in a solid state.", confusable: "Solemn (严肃的)" },
+                { word: "awful", pos: "形容词 (Adj.)", def: "糟糕的；可怕的", pron: "/ˈɔːfəl/", example: "The weather was awful all day.", confusable: "Offal (内脏)" },
+                { word: "safe", pos: "形容词 (Adj.)", def: "安全的", pron: "/seɪf/", example: "Keep your valuables in a safe place.", confusable: "Save (保存)" },
+                { word: "quiet", pos: "形容词 (Adj.)", def: "安静的", pron: "/ˈkwaɪət/", example: "Please be quiet in the library.", confusable: "Quite (相当地)" },
+                { word: "Cool", pos: "形容词 (Adj.)", def: "凉爽的；酷的", pron: "/kuːl/", example: "The weather is getting cool in the autumn.", confusable: "Cold (寒冷的)" },
+                { word: "Awesome", pos: "形容词 (Adj.)", def: "极好的；了不起的", pron: "/ˈɔːsəm/", example: "The view from the top of the mountain was awesome.", confusable: "Awful (糟糕的)" }
+            ]},
+            { category: "四、 抽象概念与物理变化 (Abstract Concepts & Physical Changes)", shortCategory: "概念/物理", words: [
+                { word: "Noise", pos: "名词 (N.)", def: "噪音；响声", pron: "/nɔɪz/", example: "The sudden noise woke me up.", confusable: "Nose (鼻子)" },
+                { word: "Escape", pos: "动词 (V.)", def: "逃跑；逃脱", pron: "/ɪˈskeɪp/", example: "The bird managed to escape from its cage.", confusable: "Scrape (刮擦)" },
+                { word: "Escapes", pos: "动词 (V.)", def: "逃脱 (第三人称单数)", pron: "/ɪˈskeɪps/", example: "The truth often escapes detection.", confusable: "Scapes (风景)" },
+                { word: "Flow", pos: "名词/动词 (N./V.)", def: "流动；流量", pron: "/floʊ/", example: "The river's flow is strongest in spring.", confusable: "Flew (飞行的过去式)" },
+                { word: "Winter", pos: "名词 (N.)", def: "冬天", pron: "/ˈwɪntər/", example: "We are looking forward to a snowy winter.", confusable: "Wander (漫步)" },
+                { word: "Steam", pos: "名词 (N.)", def: "蒸汽；水蒸气", pron: "/stiːm/", example: "Hot water gives off steam.", confusable: "Stream (溪流)" },
+                { word: "melt", pos: "动词 (V.)", def: "融化", pron: "/mɛlt/", example: "The ice cream will melt in the sun.", confusable: "Mailed (邮寄的过去式)" },
+                { word: "heat", pos: "名词/动词 (N./V.)", def: "热量；加热", pron: "/hiːt/", example: "The sun provides light and heat.", confusable: "Hit (击打)" },
+                { word: "mixture", pos: "名词 (N.)", def: "混合物", pron: "/ˈmɪkstʃər/", example: "The cake batter is a mixture of flour, eggs, and sugar.", confusable: "Mixture (混合)" },
+                { word: "melted", pos: "形容词 (Adj.)", def: "融化了的", pron: "/ˈmɛltɪd/", example: "The melted butter soaked into the toast.", confusable: "Metal (金属)" },
+                { word: "liquid", pos: "名词 (N.)", def: "液体", pron: "/ˈlɪkwɪd/", example: "Water is a clear liquid.", confusable: "Lick it (舔它)" }
+            ]},
+            { category: "五、 交通与地理 (Transportation & Geography)", shortCategory: "交通/地理", words: [
+                { word: "Australia", pos: "名词 (N.)", def: "澳大利亚", pron: "/ɔːˈstreɪliə/", example: "Australia is famous for its kangaroos.", confusable: "Austria (奥地利)" },
+                { word: "Egypt", pos: "名词 (N.)", def: "埃及", pron: "/ˈiːdʒɪpt/", example: "The pyramids of Egypt are ancient wonders.", confusable: "Gypsy (吉普赛人)" },
+                { word: "Cable", pos: "名词 (N.)", def: "电缆；钢索", pron: "/ˈkeɪbəl/", example: "A thick cable supports the bridge.", confusable: "Able (能干的)" },
+                { word: "Truck", pos: "名词 (N.)", def: "卡车；货车", pron: "/trʌk/", example: "The truck carried a heavy load of goods.", confusable: "Trek (长途跋涉)" },
+                { word: "ship", pos: "名词 (N.)", def: "船；舰", pron: "/ʃɪp/", example: "The cargo ship sailed across the ocean.", confusable: "Sheep (绵羊)" },
+                { word: "ocean", pos: "名词 (N.)", def: "海洋", pron: "/ˈoʊʃən/", example: "We swam in the warm ocean water.", confusable: "Notion (概念)" },
+                { word: "train", pos: "名词 (N.)", def: "火车；训练", pron: "/treɪn/", example: "I took the high-speed train to the city.", confusable: "Drain (排水)" },
+                { word: "airplane", pos: "名词 (N.)", def: "飞机", pron: "/ˈɛərpleɪn/", example: "We took an airplane to travel overseas.", confusable: "Airy (通风的)" },
+                { word: "island", pos: "名词 (N.)", def: "岛屿", pron: "/ˈaɪlənd/", example: "They visited a beautiful tropical island.", confusable: "Ireland (爱尔兰)" },
+                { word: "world", pos: "名词 (N.)", def: "世界", pron: "/wɜːrld/", example: "People travel all over the world.", confusable: "Whirl" }
+            ]},
+            { category: "六、 沟通与信息 (Communication & Information)", shortCategory: "沟通/信息", words: [
+                { word: "apostrophe", pos: "名词 (N.)", def: "撇号 ( ' )", pron: "/əˈpɑːstrəfi/", example: "We use an apostrophe in contractions like don't.", confusable: "Apostate (叛教者)" },
+                { word: "contraction", pos: "名词 (N.)", def: "缩写词；收缩", pron: "/kənˈtrækʃən/", example: "It's is a contraction of it is.", confusable: "Contact (联系)" },
+                { word: "communication", pos: "名词 (N.)", def: "交流；通信", pron: "/kəˌmjuːnɪˈkeɪʃən/", example: "Good communication is important in a team.", confusable: "Communion (圣餐)" },
+                { word: "information", pos: "名词 (N.)", def: "信息；资料", pron: "/ˌɪnfərˈmeɪʃən/", example: "The website provides useful information.", confusable: "Formation (形成)" },
+                { word: "textmessages", pos: "名词 (N.)", def: "手机短信", pron: "/ˈtɛkstˌmɛsɪdʒɪz/", example: "I sent him several textmessages yesterday.", confusable: "Textile (纺织品)" },
+                { word: "text", pos: "名词 (N.)", def: "文本；正文", pron: "/tɛkst/", example: "The text of the email was very long.", confusable: "Test (测试)" },
+                { word: "send", pos: "动词 (V.)", def: "发送；寄出", pron: "/sɛnd/", example: "Please send the file via email.", confusable: "Sent (发送的过去式)" },
+                { word: "internet", pos: "名词 (N.)", def: "互联网", pron: "/ˈɪntərnɛt/", example: "We use the internet to search for news.", confusable: "Internal (内部的)" },
+                { word: "communicate", pos: "动词 (V.)", def: "交流；传达", pron: "/kəˈmjuːnɪkeɪt/", example: "They communicate mainly by email.", confusable: "Commute (通勤)" },
+                { word: "printed", pos: "形容词 (Adj.)", def: "打印的；印刷的", pron: "/ˈprɪntɪd/", example: "The printed document is on your desk.", confusable: "Painted (上漆的)" },
+                { word: "mailed", pos: "动词 (V.)", def: "邮寄了", pron: "/meɪld/", example: "I mailed the package yesterday.", confusable: "Melted (融化的)" },
+                { word: "later", pos: "副词 (Adv.)", def: "后来；稍后", pron: "/ˈleɪtər/", example: "I will call you later this evening.", confusable: "Latter (后者)" },
+                { word: "letter", pos: "名词 (N.)", def: "信；字母", pron: "/ˈlɛtər/", example: "She wrote a long letter to her friend.", confusable: "Latter (后者)" },
+                { word: "dictionary", pos: "名词 (N.)", def: "词典；字典", pron: "/ˈdɪkʃəˌnɛri/", example: "I looked up the word in the dictionary.", confusable: "Fiction (小说)" },
+                { word: "alphabetical", pos: "形容词 (Adj.)", def: "按字母顺序的", pron: "/ˌælfəˈbɛtɪkəl/", example: "Arrange the names in alphabetical order.", confusable: "Alphanumeric (字母数字的)" }
+            ]},
+            { category: "七、 人物、地点与时间 (People, Places & Time)", shortCategory: "人物/地点", words: [
+                { word: "Apartment", pos: "名词 (N.)", def: "公寓", pron: "/əˈpɑːrtmənt/", example: "They live in a small apartment in the city.", confusable: "Department (部门)" },
+                { word: "Leo", pos: "专有名词 (N.)", def: "狮子座；人名 (利奥)", pron: "/ˈliːoʊ/", example: "Leo is my brother's name.", confusable: "Liaw (姓氏)" },
+                { word: "juice", pos: "名词 (N.)", def: "果汁", pron: "/dʒuːs/", example: "I like to drink orange juice for breakfast.", confusable: "Loose (松的)" },
+                { word: "cafeteria", pos: "名词 (N.)", def: "自助餐厅；食堂", pron: "/ˌkæfɪˈtɪəriə/", example: "We eat lunch in the school cafeteria.", confusable: "Caffeine (咖啡因)" },
+                { word: "vanilla", pos: "名词 (N.)", def: "香草 (口味)", pron: "/vəˈnɪlə/", example: "My favorite ice cream flavor is vanilla.", confusable: "Venal (贪财的)" },
+                { word: "friends", pos: "名词 (N.)", def: "朋友们", pron: "/frɛndz/", example: "I went to the park with my friends.", confusable: "Fiends (恶魔)" },
+                { word: "London", pos: "专有名词 (N.)", def: "伦敦", pron: "/ˈlʌndən/", example: "London is the capital of England.", confusable: "Linden (菩提树)" },
+                { word: "Henry", pos: "专有名词 (N.)", def: "人名 (亨利)", pron: "/ˈhɛnri/", example: "Henry is a common English name.", confusable: "Hennery (家禽饲养场)" },
+                { word: "Lucia", pos: "专有名词 (N.)", def: "人名 (露西亚)", pron: "/luːˈsiːə/", example: "Lucia is visiting from Spain.", confusable: "Loose eye (松散的眼睛)" },
+                { word: "Ellis", pos: "专有名词 (N.)", def: "姓氏/人名 (埃利斯)", pron: "/ˈɛlɪs/", example: "My neighbor's name is Ms. Ellis.", confusable: "Alias (别名)" },
+                { word: "Clerks", pos: "名词 (N.)", def: "职员；店员", pron: "/klɜːrks/", example: "The bank clerks were very helpful.", confusable: "Clacks (卡嗒声)" },
+                { word: "Ltaly", pos: "专有名词 (N.)", def: "意大利 (正确拼写: Italy)", pron: "/ˈɪtəli/", example: "I dream of traveling to Italy.", confusable: "Lately (最近)" }
+            ]},
+            { category: "八、 动词与助词 (Verbs & Particles)", shortCategory: "动词/助词", words: [
+                { word: "Through", pos: "介词 (Prep.)", def: "穿过；通过", pron: "/θruː/", example: "The sunlight came through the window.", confusable: "Threw (投掷的过去式)" },
+                { word: "our", pos: "代词 (Pron.)", def: "我们的", pron: "/ˈaʊər/", example: "This is our new house.", confusable: "Are (是), Hour (小时)" },
+                { word: "heats", pos: "动词 (V.)", def: "加热 (第三人称单数)", pron: "/hiːts/", example: "The oven heats the food very quickly.", confusable: "Hits (击打)" },
+                { word: "taking", pos: "动词 (V.)", def: "拿；带；占用", pron: "/ˈteɪkɪŋ/", example: "She is taking a picture of the view.", confusable: "Talking (说话)" },
+                { word: "joined", pos: "动词 (V.)", def: "加入；连接", pron: "/dʒɔɪnd/", example: "The two wires were joined together.", confusable: "Joint (关节)" },
+                { word: "couldn't", pos: "缩写 (Contr.)", def: "could not (不能)", pron: "/ˈkʊdənt/", example: "I couldn't open the door because it was locked.", confusable: "Shouldn't (不应该)" },
+                { word: "Traveled", pos: "动词 (V.)", def: "旅行了 (美式拼写)", pron: "/ˈtrævəld/", example: "They traveled across Europe last summer.", confusable: "Travelled (英式拼写)" },
+                { word: "Order", pos: "名词/动词 (N./V.)", def: "顺序；命令；点餐", pron: "/ˈɔːrdər/", example: "Put the books in alphabetical order.", confusable: "Odour (气味)" },
+                { word: "From", pos: "介词 (Prep.)", def: "从...；来自...", pron: "/frʌm/", example: "This gift is from my aunt.", confusable: "Form (形式)" }
+            ]},
+            { category: "九、 其他 (Others)", shortCategory: "其他", words: [
+                { word: "Luckily", pos: "副词 (Adv.)", def: "幸运地", pron: "/ˈlʌkɪli/", example: "Luckily, we found a parking spot right away.", confusable: "Likely (可能地)" },
+                { word: "third", pos: "形容词 (Adj.)", def: "第三的", pron: "/θɜːrd/", example: "She won the third prize in the competition.", confusable: "Thirst (口渴)" },
+                { word: "Trip", pos: "名词 (N.)", def: "旅行；绊倒", pron: "/trɪp/", example: "We are planning a weekend trip to the mountains.", confusable: "Trap (陷阱)" },
+                { word: "salt", pos: "名词 (N.)", def: "盐", pron: "/sɔːlt/", example: "Don't forget to add a pinch of salt.", confusable: "Sault (急流)" },
+                { word: "United", pos: "形容词 (Adj.)", def: "联合的；统一的", pron: "/juːˈnaɪtɪd/", example: "The fifty states are united in one country.", confusable: "Untied (未系紧的)" }
+            ]}
+        ];
+        
+        // --- 全局变量 ---
+        let currentWordList = [];
+        let currentCardIndex = 0;
+        let scoreCorrect = 0; // 听写模式得分
+        let scoreTotal = 0; // 听写模式总题数
+        let dogBones = 0; // 宠物模式狗粮数
+        let dogQuizList = []; // 宠物模式词汇列表
+        let dogQuizIndex = 0; // 宠物模式当前题目索引
+
+        // --- 通用工具函数 ---
+
+        // 语音合成功能
+        const speak = (text) => {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel(); 
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US'; 
+                utterance.rate = 0.9; 
+                speechSynthesis.speak(utterance);
+            } else {
+                console.error('语音合成功能不受支持。');
+            }
+        };
+
+        // 模式切换功能
+        const showView = (viewId) => {
+            ['listView', 'flashcardView', 'quizView', 'matchView', 'dogGameView'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = (id === viewId ? 'block' : 'none');
+            });
+            speechSynthesis.cancel();
+        };
+
+        // 扁平化和洗牌（所有模式共用）
+        const prepareFlashcards = () => {
+            currentWordList = [];
+            vocabularyData.forEach(cat => {
+                cat.words.forEach(word => {
+                    currentWordList.push({ ...word, category: cat.shortCategory });
+                });
+            });
+            
+            // 随机打乱词汇顺序
+            for (let i = currentWordList.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [currentWordList[i], currentWordList[j]] = [currentWordList[j], currentWordList[i]];
+            }
+
+            currentCardIndex = 0;
+            const totalCardsElement = document.getElementById('totalCards');
+            if(totalCardsElement) {
+                 totalCardsElement.textContent = currentWordList.length;
+            }
+        };
+
+        // --- 1. 列表视图功能 ---
+        const renderVocabularyList = () => {
+            const container = document.getElementById('vocabulary-list');
+            if (!container) return; 
+
+            let html = '';
+            vocabularyData.forEach(cat => {
+                html += `<h2>${cat.category}</h2>`;
+                html += `
+                    <table>
+                        <thead><tr><th>单词 (Word)</th><th>词性 (P.O.S)</th><th>中文释义</th><th>发音 (IPA)</th><th>例句 (Example Sentence)</th><th>易混淆词 (Confusable)</th></tr></thead>
+                        <tbody>
+                `;
+                cat.words.forEach(word => {
+                    html += `
+                        <tr>
+                            <td class="word-cell" data-label="单词" onclick="speak('${word.word.replace(/'/g, "\\'")}')">${word.word}</td>
+                            <td class="pos" data-label="词性">${word.pos}</td>
+                            <td data-label="中文释义">${word.def}</td>
+                            <td class="pron" data-label="发音">${word.pron}</td>
+                            <td data-label="例句">${word.example}</td>
+                            <td data-label="易混淆词">${word.confusable}</td>
+                        </tr>
+                    `;
+                });
+                html += `</tbody></table>`;
+            });
+            container.innerHTML = html;
+        };
+        
+        // --- 2. 翻转卡片学习功能 ---
+        const renderCard = () => {
+            if (currentWordList.length === 0) return;
+            const word = currentWordList[currentCardIndex];
+            const flashcard = document.querySelector('.flashcard');
+            if(flashcard) flashcard.classList.remove('flipped');
+            const cardFront = document.getElementById('cardFront');
+            const cardBack = document.getElementById('cardBack');
+            const cardCount = document.getElementById('cardCount');
+            const cardCategory = document.getElementById('cardCategory');
+            if (cardFront && cardBack && cardCount && cardCategory) {
+                cardFront.textContent = word.word;
+                cardBack.innerHTML = `
+                    <p class="definition">【${word.pos}】${word.def}</p>
+                    <p><strong>例句:</strong> <span class="example">${word.example}</span></p>
+                    <p><strong>音标:</strong> <span class="pron">${word.pron}</span></p>
+                    <p><strong>易混淆:</strong> ${word.confusable}</p>
+                `;
+                cardCount.textContent = currentCardIndex + 1;
+                cardCategory.textContent = `分类：${word.category}`;
+            }
+        };
+        window.flipCard = () => {
+            const flashcard = document.querySelector('.flashcard');
+            if(flashcard) flashcard.classList.toggle('flipped');
+        };
+        const navigateCard = (direction) => {
+            const total = currentWordList.length;
+            if (total === 0) return;
+            if (direction === 'next') {
+                currentCardIndex = (currentCardIndex + 1) % total;
+            } else if (direction === 'prev') {
+                currentCardIndex = (currentCardIndex - 1 + total) % total;
+            }
+            renderCard();
+        };
+
+
+        // --- 3. 听写模式功能 ---
+        const updateQuizScore = () => {
+            document.getElementById('scoreCorrect').textContent = scoreCorrect;
+            document.getElementById('scoreTotal').textContent = scoreTotal;
+        };
+        const initQuiz = () => {
+            prepareFlashcards(); 
+            scoreCorrect = 0;
+            scoreTotal = 0;
+            currentCardIndex = -1; 
+            updateQuizScore();
+            const nextBtn = document.getElementById('quizNextBtn');
+            if(nextBtn) nextBtn.click();
+        };
+        const nextQuiz = () => {
+            const total = currentWordList.length;
+            if (total === 0) return;
+            currentCardIndex = (currentCardIndex + 1) % total; 
+            const word = currentWordList[currentCardIndex];
+            document.getElementById('quizInstruction').textContent = '点击播放，听单词拼写：';
+            document.getElementById('quizCategory').textContent = `分类：${word.category}`;
+            document.getElementById('quizInput').value = '';
+            document.getElementById('quizInput').style.backgroundColor = 'white';
+            document.getElementById('quizFeedback').textContent = '';
+            document.getElementById('quizSubmitBtn').style.display = 'inline-block';
+            document.getElementById('quizNextBtn').style.display = 'none';
+            speak(word.word);
+        };
+        const checkQuizAnswer = () => {
+            const input = document.getElementById('quizInput').value.trim();
+            const correctWord = currentWordList[currentCardIndex].word;
+            const feedback = document.getElementById('quizFeedback');
+            const submitBtn = document.getElementById('quizSubmitBtn');
+            const nextBtn = document.getElementById('quizNextBtn');
+            const inputField = document.getElementById('quizInput');
+            if (input === '') {
+                feedback.textContent = '请输入答案！';
+                feedback.style.color = '#e74c3c';
+                return;
+            }
+            scoreTotal++;
+            if (input.toLowerCase() === correctWord.toLowerCase()) {
+                scoreCorrect++;
+                feedback.innerHTML = `✅ **正确！** 单词是：${correctWord} ( ${currentWordList[currentCardIndex].pron} )`;
+                feedback.style.color = '#ff69b4'; // Kuromi Pink for correct
+                inputField.style.backgroundColor = '#f7f7f7';
+            } else {
+                feedback.innerHTML = `❌ **错误。** 正确答案是：**${correctWord}** ( ${currentWordList[currentCardIndex].pron} )`;
+                feedback.style.color = '#8a2be2'; // Kuromi Purple for incorrect
+                inputField.style.backgroundColor = '#fef0fe';
+            }
+            submitBtn.style.display = 'none';
+            nextBtn.style.display = 'inline-block';
+            updateQuizScore();
+        };
+
+        // --- 4. 易混淆词配对模式功能 ---
+        const renderMatchList = () => {
+            const container = document.getElementById('matchListContainer');
+            if (!container) return;
+            const allWords = [];
+            vocabularyData.forEach(cat => {
+                cat.words.forEach(word => {
+                    if (word.confusable && word.confusable.trim() !== '') {
+                         allWords.push(word);
+                    }
+                });
+            });
+            // --- MODIFICATION 1: Centering the grid container ---
+            let html = '<div style="max-width: 800px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left;">';
+            allWords.forEach(word => {
+                const originalWordClean = word.word.replace(/'/g, "\\'");
+                const confusableWordText = word.confusable.split('(')[0].trim();
+                const confusableWordClean = confusableWordText.replace(/'/g, "\\'");
+                const confusableHint = word.confusable.match(/\((.*?)\)/) ? word.confusable.match(/\((.*?)\)/)[1] : '点击听发音';
+                html += `
+                    <div class="match-card">
+                        <p style="margin: 0; font-size: 1.1em; color: #1a1a1a;">
+                            **原词：** <strong class="word-cell" onclick="speak('${originalWordClean}')" style="cursor: pointer;">${word.word}</strong>
+                            <span style="font-size: 0.9em; color: #8a2be2;"> (${word.def})</span>
+                        </p>
+                        <p style="margin: 5px 0 0 0; font-style: italic; color: #1a1a1a;">
+                            **易混淆：** <strong class="word-cell" onclick="speak('${confusableWordClean}')" style="cursor: pointer;">${confusableWordText}</strong> 
+                            <span style="font-size: 0.9em; color: #95a5a6;">(${confusableHint})</span>
+                        </p>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        };
+
+
+        // --- 5. 宠物挑战模式功能 ---
+        
+        // 宠物模式：显示/隐藏错误回顾区域
+        window.toggleDogReview = () => {
+            const reviewArea = document.getElementById('wordReviewArea');
+            if (reviewArea) {
+                // 如果当前是隐藏的，则改为显示；如果是显示的，则改为隐藏
+                reviewArea.style.display = (reviewArea.style.display === 'none' ? 'block' : 'none');
+                
+                // 如果是展开，尝试播放单词
+                if (reviewArea.style.display === 'block' && dogQuizList.length > 0) {
+                     speak(dogQuizList[dogQuizIndex].word);
+                }
+            }
+        };
+
+        const initDogGame = () => {
+            dogBones = 0;
+            
+            dogQuizList = [];
+            vocabularyData.forEach(cat => {
+                cat.words.forEach(word => {
+                    dogQuizList.push({ 
+                        ...word, 
+                        questionType: 'spell_en', // 明确设置为拼写挑战
+                    });
+                });
+            });
+            
+            // 随机打乱
+            for (let i = dogQuizList.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [dogQuizList[i], dogQuizList[j]] = [dogQuizList[j], dogQuizList[i]];
+            }
+
+            dogQuizIndex = -1; 
+            document.getElementById('boneCount').textContent = dogBones;
+            updateDogVisuals();
+            
+            const nextBtn = document.getElementById('dogGameNextBtn');
+            if (nextBtn) nextBtn.click(); 
+        };
+        
+        const updateDogVisuals = () => {
+            const dogAvatar = document.getElementById('dogAvatar');
+            const dogMood = document.getElementById('dogMood');
+            const dogStatus = document.getElementById('dogStatus');
+            const boneCount = document.getElementById('boneCount');
+
+            if (!dogAvatar || !dogMood || !dogStatus) return;
+            
+            boneCount.textContent = dogBones;
+
+            // --- MODIFICATION 2: Change "骨头" to "狗粮" and "块" to "份" ---
+            if (dogBones === 0) {
+                dogAvatar.textContent = '🐕';
+                dogMood.textContent = '小狗很兴奋，但肚子有点饿...';
+                dogStatus.textContent = '🍚 努力答题赚狗粮！';
+            } else if (dogBones < 10) {
+                dogAvatar.textContent = '🐶';
+                dogMood.textContent = `小狗吃了 ${dogBones} 份狗粮，心情很不错！`;
+                dogStatus.textContent = '干得漂亮！继续喂食！';
+            } else {
+                dogAvatar.textContent = '🐕‍🦺';
+                dogMood.textContent = `🥳 小狗超级满足！总共 ${dogBones} 份狗粮！`;
+                dogStatus.textContent = '你真是个优秀的家长！';
+            }
+        };
+
+        const nextDogGameQuestion = () => {
+            if (dogQuizList.length === 0) return;
+            
+            dogQuizIndex = (dogQuizIndex + 1) % dogQuizList.length;
+            const question = dogQuizList[dogQuizIndex];
+            
+            // --- 核心变化：问题改为根据中文释义拼写英文单词 ---
+            const questionText = `【${question.category}】请根据中文释义 **${question.def}** (${question.pos})，拼写出正确的英文单词。`;
+
+            // 重置回顾区域
+            const memorizeBtn = document.getElementById('memorizeWordBtn');
+            const reviewArea = document.getElementById('wordReviewArea');
+            if (memorizeBtn) memorizeBtn.style.display = 'none';
+            if (reviewArea) reviewArea.style.display = 'none';
+
+            // 重置界面
+            document.getElementById('dogGameQuestion').innerHTML = questionText; 
+            document.getElementById('dogGameInput').value = '';
+            document.getElementById('dogGameInput').placeholder = '在此输入英文单词拼写'; // 确保提示正确
+            document.getElementById('dogGameInput').style.backgroundColor = 'white';
+            document.getElementById('dogGameInput').style.color = '#1a1a1a'; // Ensure input text is dark
+            document.getElementById('dogGameFeedback').textContent = '';
+            document.getElementById('dogGameSubmitBtn').style.display = 'inline-block';
+            document.getElementById('dogGameNextBtn').style.display = 'none';
+
+            // 此处不播放单词，因为是拼写挑战
+        };
+
+        const checkDogGameAnswer = () => {
+            const input = document.getElementById('dogGameInput').value.trim();
+            const currentQuestion = dogQuizList[dogQuizIndex];
+            const feedback = document.getElementById('dogGameFeedback');
+            const submitBtn = document.getElementById('dogGameSubmitBtn');
+            const nextBtn = document.getElementById('dogGameNextBtn');
+            const inputField = document.getElementById('dogGameInput');
+            
+            const memorizeBtn = document.getElementById('memorizeWordBtn');
+            const reviewArea = document.getElementById('wordReviewArea');
+            const reviewContent = document.getElementById('reviewContent');
+
+
+            if (input === '') {
+                feedback.textContent = '请输入答案！';
+                feedback.style.color = '#8a2be2';
+                return;
+            }
+
+            // --- 核心变化：检查输入（英文拼写）是否等于正确单词 ---
+            const correctWord = currentQuestion.word;
+            const correctAnswerDisplay = `**${correctWord}** (中文: ${currentQuestion.def})`;
+
+            let isCorrect = (input.toLowerCase() === correctWord.toLowerCase());
+
+            if (isCorrect) {
+                dogBones++;
+                // --- MODIFICATION 2: Change "骨头" to "狗粮" and "块" to "份" (Correct Feedback) ---
+                feedback.innerHTML = `🍚 **拼写正确！** 单词是：${correctAnswerDisplay}。小狗获得了 1 份狗粮！`;
+                feedback.style.color = '#ff69b4'; // Kuromi Pink
+                inputField.style.backgroundColor = '#f7f7f7'; // Light Gray
+                inputField.style.color = '#1a1a1a';
+
+                // 答对时朗读单词
+                speak(correctWord);
+
+                if (memorizeBtn) memorizeBtn.style.display = 'none';
+                if (reviewArea) reviewArea.style.display = 'none';
+            } else {
+                feedback.innerHTML = `😭 **拼写错误。** 正确答案是：${correctAnswerDisplay}。小狗很伤心...`;
+                feedback.style.color = '#8a2be2'; // Kuromi Purple
+                inputField.style.backgroundColor = '#fef0fe'; // Very Light Pink
+                inputField.style.color = '#1a1a1a';
+                
+                // 答错时朗读单词，方便即时学习
+                speak(correctWord);
+
+                // --- 错误回顾逻辑：显示按钮并填充内容 ---
+                if (memorizeBtn) memorizeBtn.style.display = 'inline-block';
+
+                if (reviewContent && currentQuestion) {
+                    reviewContent.innerHTML = `
+                        <p style="margin: 5px 0;"><strong>英文单词:</strong> <span style="font-size: 1.2em; cursor: pointer;" onclick="speak('${currentQuestion.word.replace(/'/g, "\\'")}')">${currentQuestion.word}</span></p>
+                        <p style="margin: 5px 0;"><strong>中文释义:</strong> ${currentQuestion.def}</p>
+                        <p style="margin: 5px 0;"><strong>词性/音标:</strong> ${currentQuestion.pos} / <span style="color: #27ae60;">${currentQuestion.pron}</span></p>
+                        <p style="margin: 5px 0;"><strong>例句:</strong> <em>${currentQuestion.example}</em></p>
+                        <p style="margin: 5px 0;"><strong>易混淆词:</strong> ${currentQuestion.confusable}</p>
+                    `;
+                    // 默认不展开，等待用户点击按钮
+                }
+            }
+
+            submitBtn.style.display = 'none';
+            nextBtn.style.display = 'inline-block';
+            updateDogVisuals();
+        };
+
+        // 宠物模式回车键处理
+        const handleDogGameKeyPress = (event) => {
+             if (event.key === 'Enter') {
+                const submitBtn = document.getElementById('dogGameSubmitBtn');
+                const nextBtn = document.getElementById('dogGameNextBtn');
+                
+                if (submitBtn.style.display !== 'none') {
+                    checkDogGameAnswer();
+                } else if (nextBtn.style.display !== 'none') {
+                    nextDogGameQuestion();
+                }
+            }
+        };
+
+        // --- 启动逻辑和事件绑定 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. 渲染列表视图（默认模式）
+            renderVocabularyList();
+            showView('listView');
+            
+            // 2. 绑定模式切换按钮
+            const listViewBtn = document.getElementById('listViewBtn');
+            const flashcardBtn = document.getElementById('flashcardBtn');
+            const quizModeBtn = document.getElementById('quizModeBtn');
+            const matchModeBtn = document.getElementById('matchModeBtn');
+            const dogGameBtn = document.getElementById('dogGameBtn');
+
+            if (listViewBtn) listViewBtn.addEventListener('click', () => showView('listView'));
+            
+            if (flashcardBtn) flashcardBtn.addEventListener('click', () => {
+                prepareFlashcards(); 
+                if (currentWordList.length > 0) {
+                    renderCard();
+                    showView('flashcardView');
+                }
+            });
+            
+            if (quizModeBtn) quizModeBtn.addEventListener('click', () => {
+                showView('quizView');
+                initQuiz();
+            });
+            
+            if (matchModeBtn) matchModeBtn.addEventListener('click', () => {
+                renderMatchList();
+                showView('matchView');
+            });
+            
+            if (dogGameBtn) dogGameBtn.addEventListener('click', () => {
+                showView('dogGameView');
+                initDogGame();
+            });
+
+            // 3. 绑定卡片导航按钮
+            const nextCardBtn = document.getElementById('nextCardBtn');
+            const prevCardBtn = document.getElementById('prevCardBtn');
+            if (nextCardBtn) nextCardBtn.addEventListener('click', () => navigateCard('next'));
+            if (prevCardBtn) prevCardBtn.addEventListener('click', () => navigateCard('prev'));
+
+            // 4. 绑定听写模式按钮 (不变)
+            const quizSpeakBtn = document.getElementById('quizSpeakBtn');
+            const quizSubmitBtn = document.getElementById('quizSubmitBtn');
+            const quizNextBtn = document.getElementById('quizNextBtn');
+            const quizInput = document.getElementById('quizInput');
+
+            if (quizSpeakBtn) quizSpeakBtn.addEventListener('click', () => {
+                if (currentWordList.length > 0 && currentCardIndex > -1) {
+                    speak(currentWordList[currentCardIndex].word);
+                }
+            });
+            if (quizSubmitBtn) quizSubmitBtn.addEventListener('click', checkQuizAnswer);
+            if (quizNextBtn) quizNextBtn.addEventListener('click', nextQuiz);
+            if (quizInput) quizInput.addEventListener('keypress', (event) => {
+                 if (event.key === 'Enter') {
+                    if (quizSubmitBtn.style.display !== 'none') {
+                        checkQuizAnswer();
+                    } else if (quizNextBtn.style.display !== 'none') {
+                        nextQuiz();
+                    }
+                }
+            });
+
+            // 5. 绑定宠物挑战模式按钮 (已修改逻辑)
+            const dogGameSubmitBtn = document.getElementById('dogGameSubmitBtn');
+            const dogGameNextBtn = document.getElementById('dogGameNextBtn');
+            const dogGameInput = document.getElementById('dogGameInput');
+
+            if (dogGameSubmitBtn) dogGameSubmitBtn.addEventListener('click', checkDogGameAnswer);
+            if (dogGameNextBtn) dogGameNextBtn.addEventListener('click', nextDogGameQuestion);
+            if (dogGameInput) dogGameInput.addEventListener('keypress', handleDogGameKeyPress);
+        });
+    </script>
+</body>
+</html>
